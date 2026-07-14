@@ -28,7 +28,7 @@
 دستور زیر را در ترمینال سرور اجرا کنید:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel/main/index.html -o /etc/x-ui/index.html && systemctl restart x-ui
+curl -fsSL https://raw.githubusercontent.com/hamedstajloo/VPN-/main/index.html -o /etc/x-ui/index.html && systemctl restart x-ui
 ```
 
 ---
