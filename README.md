@@ -1,3 +1,6 @@
+
+
+```text
 # 📊 پنل کاربری شیک و مدرن 3X-UI (Sanaei)
 
 یک فرانت‌اند مدرن، زیبا و بهینه برای نمایش وضعیت مصرف، زمان باقی‌مانده و حجم کانفیگ‌های کاربران در پنل 3X-UI.
@@ -36,11 +39,11 @@ sudo curl -fsSL https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel
 
 ---
 
-## ⚙️ فعال‌سازی در 3X-UI
+⚙️ فعال‌سازی در 3X-UI
 
-1. وارد پنل **3X-UI** شوید.
-2. به بخش **Subscription Settings** بروید.
-3. در قسمت **Custom Path** مسیر زیر را وارد کنید:
+1. وارد پنل 3X-UI شوید.
+2. به بخش Subscription Settings بروید.
+3. در قسمت Custom Path مسیر زیر را وارد کنید:
 
 ```text
 /etc/x-ui/
@@ -55,7 +58,7 @@ systemctl restart x-ui
 
 ---
 
-## 📁 ساختار پروژه
+📁 ساختار پروژه
 
 ```text
 sanaei-user-panel/
@@ -67,12 +70,16 @@ sanaei-user-panel/
 
 ---
 
-## 🤝 مشارکت
+🤝 مشارکت
 
 در صورت تمایل می‌توانید پیشنهادات و Pull Requestهای خود را ارسال کنید.
 
 ---
 
-## 📄 License
+📄 License
 
 This project is licensed under the MIT License.
+
+---
+
+ساخته شده با ♡ توسط بمبئی | VPN
