@@ -25,20 +25,10 @@
 
 ## 🚀 نصب خودکار
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel/main/index.html -o /etc/x-ui/index.html
-```
-
-یا:
+دستور زیر را در ترمینال سرور اجرا کنید:
 
 ```bash
-sudo curl -fsSL https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel/main/index.html -o /etc/x-ui/index.html
-```
-
-در صورت نیاز، سرویس را ریستارت کنید:
-
-```bash
-systemctl restart x-ui
+curl -fsSL https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel/main/index.html -o /etc/x-ui/index.html && systemctl restart x-ui
 ```
 
 ---
@@ -54,11 +44,6 @@ systemctl restart x-ui
 ```
 
 4. تنظیمات را ذخیره کنید.
-5. سرویس را ریستارت کنید:
-
-```bash
-systemctl restart x-ui
-```
 
 ---
 
@@ -86,7 +71,6 @@ This project is licensed under the MIT License.
 
 ---
 
-## ❤️ سازنده
 
 <p align="center">
 
