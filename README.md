@@ -17,21 +17,10 @@
 
 ---
 
-## 🚀 راهنمای نصب (دستور ترمینال)
+## 🚀 راهنمای نصب 
 
 برای دانلود و جایگذاری خودکار این فایل در مسیر مشخص شده، وارد ترمینال سرور خود شوید و دستور زیر را اجرا کنید:
 
 ```bash
 curl -o /etc/x-ui/index.html [https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel/main/index.html](https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel/main/index.html)
-
-## ⚙️ راهنمای فعال‌سازی در 3x-ui
-
-**پس از پایان نصب:**
-
-1. وارد پنل **3x-ui** شوید.
-2. به بخش **Subscription Settings** بروید.
-3. در قسمت **Custom Path** مسیر زیر را وارد کنید:
-
-```text
-/etc/x-ui/
-
+ 
