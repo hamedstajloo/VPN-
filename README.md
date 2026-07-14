@@ -12,6 +12,7 @@
 
 - 📱 طراحی کاملاً واکنش‌گرا (Responsive)
 - 🌙 رابط کاربری مدرن با تم تیره
+- 🌍 پشتیبانی از ۴ زبان (فارسی، انگلیسی، عربی و ترکی)
 - ⏱️ نمایش روزهای باقی‌مانده از اعتبار سرویس
 - 📊 نمایش مصرف حجم، آپلود و دانلود
 - 🌐 پشتیبانی از چند سرور و نمایش وضعیت آن‌ها
@@ -34,6 +35,12 @@ curl -fsSL https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel/main
 sudo curl -fsSL https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel/main/index.html -o /etc/x-ui/index.html
 ```
 
+در صورت نیاز، سرویس را ریستارت کنید:
+
+```bash
+systemctl restart x-ui
+```
+
 ---
 
 ## ⚙️ فعال‌سازی در 3X-UI
@@ -47,7 +54,7 @@ sudo curl -fsSL https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel
 ```
 
 4. تنظیمات را ذخیره کنید.
-5. در صورت نیاز سرویس را ریستارت کنید:
+5. سرویس را ریستارت کنید:
 
 ```bash
 systemctl restart x-ui
@@ -76,6 +83,13 @@ sanaei-user-panel/
 ## 📄 License
 
 This project is licensed under the MIT License.
+
 ---
 
-ساخته شده ♡ با توسط بمبئی | VPN
+## ❤️ سازنده
+
+<p align="center">
+
+**ساخته شده با ♥️ توسط بمبئی | VPN**
+
+</p>
