@@ -1,4 +1,4 @@
-# 📊 پنل کاربری شیک و مدرن ۳X-UI (سنایی)
+# 📊 پنل کاربری شیک و مدرن 3X-UI (سنایی)
 
 <p align="center">
   <img src="preview.png" alt="پیش‌نمایش پنل کاربری" width="100%" style="border-radius: 10px; max-width: 600px;">
