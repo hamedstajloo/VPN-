@@ -24,3 +24,9 @@
 ```bash
 curl -o /etc/x-ui/index.html [https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel/main/index.html](https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel/main/index.html)
  
+---
+
+### این نسخه چه فرقی دارد؟
+* بخش **«⚙️ راهنمای فعال‌سازی در 3x-ui»** به عنوان یک هدر جداگانه و با فرمت زیبا به انتهای فایل اضافه شده است.
+* مراحل سه‌گانه فعال‌سازی (ورود به پنل، بخش Subscription Settings و وارد کردن مسیر در Custom Path) دقیقاً طبق عکس نوشته شده‌اند.
+* مسیر نهایی کادر آدرس هم دقیقاً روی همان مقدار مورد نیاز شما یعنی `/etc/x-ui/` تنظیم شده است.
