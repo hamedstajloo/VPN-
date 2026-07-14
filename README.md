@@ -3,7 +3,7 @@
 یک فرانت‌اند مدرن، زیبا و بهینه برای نمایش وضعیت مصرف، زمان باقی‌مانده و حجم کانفیگ‌های کاربران در پنل 3X-UI.
 
 <p align="center">
-  <img src="preview.png" alt="پیش‌نمایش پروژه" width="100%">
+  <img src="preview.jpg" alt="Sanaei User Panel Preview" width="100%">
 </p>
 
 ---
@@ -11,25 +11,24 @@
 ## ✨ ویژگی‌ها
 
 - 📱 طراحی کاملاً واکنش‌گرا (Responsive)
+- 🌙 رابط کاربری مدرن با تم تیره
 - ⏱️ نمایش روزهای باقی‌مانده از اعتبار سرویس
-- 📊 نمایش میزان مصرف حجم، آپلود و دانلود
-- 🌐 پشتیبانی از چند سرور و نمایش پینگ (Latency)
-- 📥 دانلود مستقیم برنامه
-- 📋 کپی آسان لینک اتصال
+- 📊 نمایش مصرف حجم، آپلود و دانلود
+- 🌐 پشتیبانی از چند سرور و نمایش وضعیت آن‌ها
+- 📥 دانلود مستقیم برنامه‌های موردنیاز
+- 📋 کپی سریع لینک ساب و کانفیگ
 - 📷 نمایش QR Code
-- ⚡ رابط کاربری مدرن، روان و بهینه
+- ⚡ عملکرد روان و بهینه
 
 ---
 
 ## 🚀 نصب خودکار
 
-دستور زیر را در ترمینال سرور اجرا کنید:
-
 ```bash
 curl -fsSL https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel/main/index.html -o /etc/x-ui/index.html
 ```
 
-یا در صورت نیاز با دسترسی روت:
+یا:
 
 ```bash
 sudo curl -fsSL https://raw.githubusercontent.com/hamedstajloo/sanaei-user-panel/main/index.html -o /etc/x-ui/index.html
@@ -61,26 +60,16 @@ systemctl restart x-ui
 ```text
 sanaei-user-panel/
 ├── index.html
-├── preview.png
+├── preview.jpg
 ├── README.md
 └── LICENSE
 ```
 
 ---
 
-## 📸 پیش‌نمایش
-
-تصویر زیر نمایی از رابط کاربری پروژه را نمایش می‌دهد.
-
-<p align="center">
-  <img src="preview.png" alt="Screenshot" width="100%">
-</p>
-
----
-
 ## 🤝 مشارکت
 
-در صورت تمایل می‌توانید پیشنهادات و Pull Requestهای خود را ارسال کنید تا پروژه بهتر شود.
+در صورت تمایل می‌توانید پیشنهادات و Pull Requestهای خود را ارسال کنید.
 
 ---
 
