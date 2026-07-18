@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPN Dashboard - Ultimate Live Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/vazirmatn-font-face.css');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Vazirmatn', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #040408;
+            color: #ffffff;
+            padding: 20px 16px 100px 16px;
+            max-width: 480px;
+            margin: 0 auto;
+            transition: background-color 0.35s ease, color 0.35s ease;
+        }
+
+        html[dir="ltr"] body { direction: ltr; }
+        html[dir="rtl"] body { direction: rtl; }
+
+        .en-font { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; }
+
+        .app-screen { display: none; }
+        .app-screen.active-screen { display: block; }
+
+        .header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .profile-container { display: flex; align-items: center; }
+        html[dir="rtl"] .profile-img-wrapper { margin-left: 12px; }
+        html[dir="ltr"] .profile-img-wrapper { margin-right: 12px; }
+
+        .profile-img-wrapper {
+            position: relative; cursor: pointer; width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;
+        }
+        .upload-ring {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; border: 2px solid transparent;
+            box-sizing: border-box; pointer-events: none; transition: border-color 0.3s;
+        }
+        .profile-img-wrapper.uploading .upload-ring {
+            border-top-color: #a0b9ce; border-right-color: #a0b9ce; animation: spinRing 0.8s linear infinite;
+        }
+        @keyframes spinRing { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .profile-img {
+            width: 46px; height: 46px; border-radius: 50%; background: #141426; border: 2px solid #6c6c8c;
+            background-size: cover; background-position: center; position: relative; overflow: hidden;
+            transition: border-color 0.35s; display: flex; align-items: center; justify-content: center;
+        }
+        .default-avatar-svg { width: 24px; height: 24px; fill: #8f8fad; transition: opacity 0.3s; }
+        .plus-badge {
+            position: absolute; bottom: 2px; background: #6c6c8c; width: 14px; height: 14px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #fff;
+            border: 1.5px solid #040408; transition: all 0.3s; z-index: 3;
+        }
+        html[dir="rtl"] .plus-badge { right: 2px; } html[dir="ltr"] .plus-badge { left: 2px; }
+        .profile-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s ease; z-index: 2;
+        }
+        .profile-img-wrapper:hover .profile-overlay { opacity: 1; }
+        .profile-overlay svg { width: 16px; height: 16px; fill: #fff; }
+        #profile-file-input { display: none; }
+        .online-dot {
+            position: absolute; bottom: 2px; width: 11px; height: 11px; background-color: #00e676;
+            border-radius: 50%; border: 2px solid #040408; z-index: 3;
+        }
+        html[dir="rtl"] .online-dot { left: 2px; } html[dir="ltr"] .online-dot { right: 2px; }
+        .user-info { display: flex; align-items: center; margin-top: 4px; }
+        .user-name { font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 5px; }
+        /* در هر دو حالت rtl و ltr می‌خواهیم wave icon سمت راست اسم بماند */
+        html[dir="rtl"] .user-name { flex-direction: row-reverse; }
+        html[dir="ltr"] .user-name { flex-direction: row-reverse; }
+
+        .wave-icon-wrapper {
+            display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
+            transform-origin: bottom center; animation: premiumSoftWave 3.5s ease-in-out infinite;
+        }
+        .wave-icon-wrapper svg { width: 100%; height: 100%; }
+        @keyframes premiumSoftWave {
+            0% { transform: rotate(0deg) scale(1); } 15% { transform: rotate(10deg) scale(1.01); }
+            30% { transform: rotate(-6deg) scale(1.02); } 45% { transform: rotate(8deg) scale(1.01); }
+            60% { transform: rotate(-4deg) scale(1); } 75% { transform: rotate(4deg) scale(1); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        .header-icons { display: flex; gap: 10px; } .lang-container { position: relative; }
+        .header-icon {
+            height: 42px; padding: 0 14px; display: flex; align-items: center; justify-content: center;
+            background: #0D0D18; border: 1px solid rgba(255,255,255,.05); border-radius: 14px; cursor: pointer;
+        }
+        .header-icon i { font-size: 16px; color: #8f8fad; }
+        .lang-btn { font-size: 13px; font-weight: 700; color: #f5f5f5; display: flex; align-items: center; gap: 6px; }
+        .lang-dropdown-menu {
+            position: absolute; top: 50px; background: #0D0D18; border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px; min-width: 110px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 1000; display: none; text-align: right;
+        }
+        html[dir="rtl"] .lang-dropdown-menu { left: 0; } html[dir="ltr"] .lang-dropdown-menu { right: 0; }
+        .lang-dropdown-menu.show { display: block; }
+        .lang-dropdown-item { padding: 10px 14px; font-size: 13px; color: #c5c5d1; cursor: pointer; transition: background 0.2s; }
+        .lang-dropdown-item:hover { background: rgba(143,143,173,0.15); color: #fff; }
+
+        .subscription-card {
+            border: 1px solid rgba(255,255,255,0.04); border-radius: 28px; padding: 24px; margin-bottom: 16px;
+            position: relative; display: flex; justify-content: space-between; align-items: center;
+            background-color: rgba(7,14,31,0.9); backdrop-filter: blur(6px); box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            transition: background-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        .subscription-card.disconnected {
+            background-color: rgba(84,17,17,0.9); box-shadow: 0 8px 20px rgba(239,68,68,0.15);
+        }
+        .status-right { display: flex; flex-direction: column; }
+        .active-badge { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #fff; font-size: 14px; font-weight: bold; }
+        .status-dot-green {
+            width: 18px; height: 18px; background-color: #22C55E; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            animation: statusPulseGreen 2s infinite;
+        }
+        .status-dot-green i { font-size: 10px; color: #fff; }
+        .subscription-card.disconnected .status-dot-green { background-color: #EF4444; animation: statusPulseRed 1.5s infinite; }
+        @keyframes statusPulseGreen {
+            0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); } 70% { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+            100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+        }
+        @keyframes statusPulseRed {
+            0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); } 70% { box-shadow: 0 0 10px rgba(239,68,68,0); }
+            100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+        }
+
+        .days-left { font-size: 38px; font-weight: 900; color: #ffffff; margin-bottom: 4px; }
+        .days-left span { color: #8bb9e0; font-size: 20px; font-weight: bold; margin-left: 6px; }
+        .subscription-card.disconnected .days-left span { color: #EF4444; }
+        .expire-date { font-size: 13px; color: #ffffff !important; font-weight: 700; }
+
+        .progress-circle {
+            --percent: 0;
+            --progress-start: #c5b9d6;
+            --progress-mid: #aec4dc;
+            --progress-end: #a3c6e8;
+            position: relative; width: 110px; height: 110px; border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                var(--progress-start) 0deg,
+                var(--progress-start) calc(var(--percent) * 1.08deg),
+                var(--progress-mid) calc(var(--percent) * 1.8deg),
+                var(--progress-end) calc(var(--percent) * 1.8deg),
+                var(--progress-end) calc(var(--percent) * 3.6deg),
+                rgba(255,255,255,0.05) calc(var(--percent) * 3.6deg)
+            );
+            box-shadow: 0 0 15px rgba(197,185,214,0.15);
+            transition: background 0.5s cubic-bezier(0.4,0,0.2,1), box-shadow 0.5s;
+        }
+        .subscription-card.disconnected .progress-circle {
+            background: conic-gradient(
+                from 0deg,
+                #e0b6b6 0deg,
+                #e0b6b6 calc(var(--percent) * 1.08deg),
+                #d4a0a0 calc(var(--percent) * 1.8deg),
+                #d49b9b calc(var(--percent) * 1.8deg),
+                #d49b9b calc(var(--percent) * 3.6deg),
+                rgba(255,255,255,0.05) calc(var(--percent) * 3.6deg)
+            );
+            box-shadow: 0 0 15px rgba(224,182,182,0.2);
+        }
+        .progress-circle::after {
+            content: ''; position: absolute; width: 96px; height: 96px; background-color: #070e1f;
+            border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%,-50%); transition: background-color 0.3s;
+        }
+        .progress-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 2; text-align: center; width: 100%;
+        }
+        .progress-text .percent { font-size: 24px; font-weight: 900; color: #fff; }
+        .progress-text .label { font-size: 11px; color: #7a7a9e; display: block; margin-top: 2px; }
+
+        .stats-card {
+            background-color: #0D0D18; border: 1px solid rgba(255,255,255,0.02); border-radius: 20px; padding: 18px 10px;
+            margin-bottom: 24px; display: flex; justify-content: space-between;
+        }
+        .stat-item { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .stat-header-row { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; flex-direction: row-reverse; }
+        html[dir="ltr"] .stat-header-row { flex-direction: row; }
+        .stat-icon-wrapper { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); }
+        .stat-title { font-size: 12px; color: #6c6c8c; }
+        .stat-value { font-size: 15px; font-weight: 700; color: #FFFFFF; }
+        .stat-value.purple-value { color: #8f8fad; }
+        .stat-divider { height: 40px; width: 1px; background: rgba(255,255,255,0.05); align-self: center; }
+
+        .section-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .section-title { font-size: 14px; font-weight: bold; color: #6c6c8c; }
+        html[dir="ltr"] .section-title { text-align: left; }
+        #toggle-all-servers-btn { cursor: pointer; color: #6c6c8c; font-size: 14px; transition: color 0.2s; }
+        #toggle-all-servers-btn:hover { color: #8f8fad; }
+
+        .servers-container { display: flex; gap: 12px; margin-bottom: 20px; }
+        .server-card-cell { flex: 1; }
+        .server-card {
+            background-color: #0D0D18; border: none; border-radius: 20px; padding: 16px; position: relative;
+            display: flex; flex-direction: column; gap: 16px; cursor: pointer; transition: none;
+            min-height: 100px; align-items: center; justify-content: center; color: #6c6c8c; font-size: 13px;
+        }
+        .flag-info { display: flex; align-items: center; gap: 12px; }
+        .flag { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; }
+        .flag-placeholder { background: #2C2C3E; display: flex; align-items: center; justify-content: center; color: #6c6c8c; font-size: 18px; }
+        .srv-name { font-size: 15px; font-weight: 700; color: #fff; }
+        .srv-name-placeholder { color: #6c6c8c !important; font-weight: 400; font-style: italic; }
+        .srv-city { font-size: 12px; color: #6c6c8c; }
+        .srv-city-placeholder { color: #5a5a78 !important; }
+        .srv-meta { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .proto-badge {
+            font-size: 11px; font-weight: 700; color: #2DBE60; background: rgba(45,190,96,0.12); padding: 3px 8px; border-radius: 8px; text-transform: uppercase;
+        }
+        .proto-badge-placeholder { color: #6c6c8c !important; background: rgba(108,108,140,0.08) !important; }
+
+        .ping-badge {
+            font-size: 11px; font-weight: 700; color: #FF8C00; background: rgba(139, 69, 19, 0.08);
+            -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); padding: 4px 10px; border-radius: 10px;
+            border: 1px solid rgba(139, 69, 19, 0.15); min-width: 48px; text-align: center; cursor: pointer; transition: all 0.2s ease;
+        }
+        .ping-badge:hover { background: rgba(139, 69, 19, 0.15); border-color: rgba(139, 69, 19, 0.35); }
+
+        .actions-grid { display: flex; gap: 10px; margin-bottom: 12px; }
+        .action-cell { flex: 1; }
+        .action-card {
+            background-color: #0D0D18; border: 1px solid rgba(255,255,255,0.02); border-radius: 20px; padding: 18px 4px;
+            text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 10px; height: 100%;
+            transition: transform 0.2s;
+        }
+        .action-card:active { transform: scale(0.96); }
+        .action-card i { font-size: 22px; }
+        .action-card.tutorial i { color: #F97316; }
+        .action-card.link i { color: #22C55E; }
+        .action-card.qr i { color: #3B82F6; }
+        .action-card.config i { color: #5a8ab5; }
+        .action-label { font-size: 11px; color: #fff; font-weight: 600; line-height: 1.3; }
+
+        .action-dropdown-container { width: 100%; margin-bottom: 24px; display: none; }
+        .action-dropdown-container.show { display: block; }
+        .action-dropdown-menu {
+            background: #0D0D18; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 10px;
+        }
+
+        .ip-row-item {
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 12px;
+            padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; width: 100%;
+        }
+        .ip-details-left { display: flex; align-items: center; gap: 12px; }
+        .action-mini-flag { width: 24px; height: 24px; border-radius: 50%; background-size: cover; border: 1px solid rgba(255,255,255,0.1); }
+        .ip-meta-block { display: flex; flex-direction: column; gap: 4px; }
+        .ip-address-text { font-size: 13px; font-weight: bold; color: #fff; }
+        .ip-protocol-badge-box {
+            display: inline-flex; gap: 3px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 6px; padding: 2px 6px; font-size: 10px;
+        }
+        .proto-part-1 { color: #F97316; } .proto-part-2 { color: #3B82F6; } .proto-part-3 { color: #22C55E; }
+
+        .ip-copy-btn {
+            background: rgba(143,143,173,0.12); color: #8f8fad; padding: 6px 12px; border-radius: 10px; font-size: 11px;
+            font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; border: 1px solid rgba(143,143,173,0.2);
+        }
+        .ip-copy-btn:hover { background: #8f8fad; color: #fff; }
+
+        .copy-all-btn {
+            background: rgba(143,143,173,0.2); border: 1px solid rgba(143,143,173,0.3); color: #fff; padding: 8px 14px;
+            border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; gap: 8px; width: 100%; transition: all 0.25s; margin-bottom: 8px;
+        }
+        .copy-all-btn:hover { background: #8f8fad; }
+
+        .qr-modern-wrapper {
+            padding: 6px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+        }
+        .qr-modern-wrapper:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); }
+        .qr-modern-wrapper img { width: 24px; height: 24px; display: block; border-radius: 4px; }
+
+        .download-os-tabs {
+            display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; background: #0D0D18;
+            padding: 6px; border-radius: 16px; margin-bottom: 24px;
+        }
+        .os-tab-btn { background: transparent; border: none; color: #6c6c8c; padding: 10px 4px; font-size: 12px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .os-tab-btn.active-tab { background-color: #3b5f8a; color: #fff; box-shadow: 0 4px 12px rgba(59,95,138,0.3); }
+
+        .client-card-item { background-color: #0D0D18; border: 1px solid rgba(255,255,255,0.02); border-radius: 20px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .client-info-side { display: flex; align-items: center; gap: 12px; }
+        .client-icon-box { width: 44px; height: 44px; background: rgba(255,255,255,0.03); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #8f8fad; }
+        .client-title-text { font-size: 14px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px; }
+        .client-subtitle-text { font-size: 11px; color: #6c6c8c; margin-top: 2px; }
+        .client-download-btn { background-color: rgba(45,190,96,0.15); color: #2DBE60; padding: 8px 18px; border-radius: 12px; font-size: 12px; font-weight: 700; text-decoration: none; }
+        .client-download-btn:hover { background-color: #2DBE60; color: #fff; }
+
+        .recommended-badge {
+            display: inline-flex; align-items: center; gap: 3px;
+            background: rgba(234, 179, 8, 0.15); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+            border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 8px; padding: 1px 6px; font-size: 10px; font-weight: 700; color: #FACC15; white-space: nowrap;
+        }
+        .recommended-badge i { font-size: 9px; color: #FACC15; }
+
+        .tutorial-ok-box {
+            background: rgba(16, 185, 129, 0.12); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+            border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 12px 14px;
+            display: flex; align-items: center; gap: 10px; color: #10B981; margin-bottom: 8px;
+        }
+        .tutorial-ok-box i { font-size: 22px; color: #10B981; }
+        .tutorial-ok-box span { font-size: 12px; line-height: 1.6; color: #D1FAE5; font-weight: 500; }
+
+        .tutorial-step {
+            display: flex; align-items: flex-start; gap: 12px; padding: 12px;
+            background: rgba(107, 114, 128, 0.08); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+            border: 1px solid rgba(107, 114, 128, 0.2); border-radius: 14px;
+        }
+        .tutorial-step-icon {
+            width: 30px; height: 30px; border-radius: 50%; background: rgba(107, 114, 128, 0.2); color: #D1D5DB;
+            display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
+        }
+        .tutorial-step-content { flex: 1; }
+        .tutorial-step-title { font-size: 13px; font-weight: 700; color: #E5E7EB; margin-bottom: 4px; }
+        .tutorial-step-desc { font-size: 12px; color: #9CA3AF; line-height: 1.6; }
+
+        .designer-card { background-color: #0D0D18; border: 1px solid rgba(255,255,255,0.03); border-radius: 14px; padding: 10px 14px; margin-top: 16px; display: flex; align-items: center; justify-content: space-between; }
+        .designer-info { display: flex; align-items: center; gap: 8px; }
+        .designer-text-label { font-size: 11px; color: #6c6c8c; }
+        .designer-name-title { font-size: 12px; font-weight: 700; color: #8f8fad; }
+        .designer-tg-btn { font-size: 15px; color: #8f8fad; text-decoration: none; }
+        .designer-tg-btn:hover { color: #fff; }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
+            background-color: #090910; border-top: 1px solid rgba(255,255,255,0.03); padding: 12px 16px; display: flex; z-index: 100;
+        }
+        .nav-item-cell { flex: 1; display: flex; justify-content: center; }
+        .nav-item { color: #535370; font-size: 11px; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; padding: 8px 0; }
+        .nav-item i { font-size: 18px; }
+        .nav-item.active { background-color: #1e1e2e; border: 1px solid rgba(143,143,173,0.15); border-radius: 16px; color: #8f8fad; }
+
+        /* لایت مود */
+        body.light-mode { background-color: #F4F6FA; color: #1A1D24; }
+        body.light-mode .header-icon { background: #ffffff; border-color: rgba(0,0,0,.05); }
+        body.light-mode .lang-btn { color: #1A1D24; }
+        body.light-mode .lang-dropdown-menu { background: #ffffff; border-color: rgba(0,0,0,0.06); }
+        body.light-mode .lang-dropdown-item { color: #555; }
+        body.light-mode .lang-dropdown-item:hover { background: #e4edf7; color: #2c5a8c; }
+        body.light-mode .user-name { color: #1A1D24; }
+        body.light-mode .profile-img { border-color: #6c6c8c; background-color: #EAEBFF; }
+        body.light-mode .online-dot, body.light-mode .plus-badge { border-color: #F4F6FA; }
+        body.light-mode .subscription-card { background-color: rgba(230,235,245,0.9); border-color: rgba(0,0,0,0.04); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        body.light-mode .subscription-card.disconnected { background-color: rgba(250,230,230,0.9); }
+        body.light-mode .active-badge { color: #1A1D24; }
+        body.light-mode .days-left { color: #1A1D24; }
+        body.light-mode .expire-date { color: #1A1D24 !important; }
+        body.light-mode .progress-circle::after { background-color: #e6ebf5; }
+        body.light-mode .progress-text .percent { color: #1A1D24; }
+        body.light-mode .progress-text .label { color: #5a6a80; }
+        body.light-mode .stats-card, body.light-mode .server-card, body.light-mode .action-card,
+        body.light-mode .client-card-item, body.light-mode .download-os-tabs, body.light-mode .designer-card,
+        body.light-mode .action-dropdown-menu { background-color: #ffffff; border-color: rgba(0,0,0,0.04); }
+        body.light-mode .server-card { background-color: #ffffff; }
+        body.light-mode .ip-row-item { background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.04); }
+        body.light-mode .ip-address-text { color: #1A1D24; }
+        body.light-mode .ip-protocol-badge-box { background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.08); }
+        body.light-mode .stat-value { color: #1A1D24; }
+        body.light-mode .stat-value.purple-value { color: #6c6c8c; }
+        body.light-mode .srv-name, body.light-mode .action-label, body.light-mode .client-title-text,
+        body.light-mode .designer-name-title { color: #1A1D24; }
+        body.light-mode .designer-name-title { color: #6c6c8c !important; }
+        body.light-mode .bottom-nav { background-color: #ffffff; }
+        body.light-mode .nav-item { color: #78789c; }
+        body.light-mode .nav-item.active { background-color: #f0f0f5; color: #6c6c8c; }
+        body.light-mode .os-tab-btn.active-tab { background-color: #3b5f8a; color: #fff; }
+        body.light-mode .copy-all-btn { background: rgba(110,110,120,0.55); color: #fff; border: 1px solid rgba(110,110,120,0.5); }
+        body.light-mode .copy-all-btn:hover { background: rgba(90,90,100,0.7); }
+        body.light-mode .ping-badge { background: rgba(139, 69, 19, 0.06); border-color: rgba(139, 69, 19, 0.12); color: #D2691E; }
+        body.light-mode .ping-badge:hover { background: rgba(139, 69, 19, 0.12); border-color: rgba(139, 69, 19, 0.25); }
+        body.light-mode .qr-modern-wrapper { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        body.light-mode .qr-modern-wrapper:hover { background: rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.15); }
+        body.light-mode .recommended-badge { background: rgba(234, 179, 8, 0.12); border-color: rgba(234, 179, 8, 0.25); color: #B45309; }
+        body.light-mode .recommended-badge i { color: #B45309; }
+        body.light-mode .tutorial-ok-box { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.25); }
+        body.light-mode .tutorial-ok-box span { color: #065F46; }
+        body.light-mode .tutorial-step { background: rgba(107, 114, 128, 0.06); border-color: rgba(107, 114, 128, 0.15); }
+        body.light-mode .tutorial-step-title { color: #111827; }
+        body.light-mode .tutorial-step-desc { color: #4B5563; }
+    </style>
+</head>
+<body>
+
+    <svg style="position: absolute; width: 0; height: 0;" width="0" height="0">
+        <defs>
+            <linearGradient id="premiumPurpleNeon" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#d1c4e9"/>
+                <stop offset="50%" stop-color="#a5c7e5"/>
+                <stop offset="100%" stop-color="#81d4fa"/>
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <div class="header">
+        <div class="profile-container">
+            <div class="profile-img-wrapper" id="profile-wrapper" onclick="triggerProfileUpload()">
+                <div class="upload-ring"></div>
+                <div class="profile-img" id="profile-display-img">
+                    <svg class="default-avatar-svg" id="default-avatar" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    <div class="profile-overlay">
+                        <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
+                    </div>
+                </div>
+                <div class="plus-badge" id="plus-icon">+</div>
+                <div class="online-dot"></div>
+                <input type="file" id="profile-file-input" accept="image/*" onchange="handleProfileImage(event)">
+            </div>
+            <div class="user-info">
+                <div class="user-name" id="user-name"></div>
+            </div>
+        </div>
+
+        <div class="header-icons">
+            <div class="lang-container">
+                <div class="header-icon" id="lang-toggle-btn">
+                    <span class="lang-btn"><i class="fa-solid fa-globe"></i> <span id="lang-text">FA</span></span>
+                </div>
+                <div class="lang-dropdown-menu" id="lang-dropdown">
+                    <div class="lang-dropdown-item" onclick="selectLanguage('fa')">فارسی</div>
+                    <div class="lang-dropdown-item" onclick="selectLanguage('en')">English</div>
+                    <div class="lang-dropdown-item" onclick="selectLanguage('tr')">Türkçe</div>
+                    <div class="lang-dropdown-item" onclick="selectLanguage('ar')">العربية</div>
+                </div>
+            </div>
+            <div class="header-icon" id="theme-toggle">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-dashboard" class="app-screen active-screen">
+        <div class="subscription-card" id="main-sub-card">
+            <div class="status-right">
+                <div class="active-badge">
+                    <span class="status-dot-green" id="status-indicator-dot"><i class="fa-solid fa-check" id="status-icon-mark"></i></span>
+                    <span id="badge-text">فعال</span>
+                </div>
+                <div class="days-left en-font" id="live-days-count">0 <span id="days-label">روز</span></div>
+                <div class="expire-date" id="expire-date">انقضا: --</div>
+            </div>
+            <div class="status-left">
+                <div class="progress-circle" id="sub-progress-circle">
+                    <div class="progress-text">
+                        <span class="percent en-font" id="live-percent-display">0%</span>
+                        <span class="label" id="remaining-label">باقی‌مانده</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stat-item"><div class="stat-header-row"><div class="stat-icon-wrapper"><i class="fa-solid fa-database" style="color:#8f8fad;"></i></div><div class="stat-title" id="title-limit">حجم کلی</div></div><div class="stat-value purple-value en-font" id="stat-limit">0 GB</div></div>
+            <div class="stat-divider"></div>
+            <div class="stat-item"><div class="stat-header-row"><div class="stat-icon-wrapper"><i class="fa-solid fa-chart-pie" style="color:#22C55E;"></i></div><div class="stat-title" id="title-total">مصرف کل</div></div><div class="stat-value en-font" id="stat-total-val">0 B</div></div>
+            <div class="stat-divider"></div>
+            <div class="stat-item"><div class="stat-header-row"><div class="stat-icon-wrapper"><i class="fa-solid fa-arrow-down" style="color:#3B82F6;"></i></div><div class="stat-title" id="title-download">دانلود</div></div><div class="stat-value en-font" id="stat-dl-val">0 B</div></div>
+            <div class="stat-divider"></div>
+            <div class="stat-item"><div class="stat-header-row"><div class="stat-icon-wrapper"><i class="fa-solid fa-arrow-up" style="color:#8f8fad;"></i></div><div class="stat-title" id="title-upload">آپلود</div></div><div class="stat-value en-font" id="stat-ul-val">0 B</div></div>
+        </div>
+
+        <div class="section-title-row">
+            <span class="section-title" id="connected-server-title">سرورهای متصل</span>
+            <i class="fa-solid fa-chevron-down" id="toggle-all-servers-btn" style="display: none;" onclick="toggleAllServersDropdown()"></i>
+        </div>
+        <div class="servers-container" id="servers-container"></div>
+        <div class="action-dropdown-container" id="dropdown-all-servers-container">
+            <div class="action-dropdown-menu" id="list-all-servers"></div>
+        </div>
+
+        <div class="actions-grid">
+            <div class="action-cell"><div class="action-card tutorial" id="btn-toggle-tutorial"><i class="fa-solid fa-book-open"></i><div class="action-label" id="action-tutorial">آموزش اتصال</div></div></div>
+            <div class="action-cell"><div class="action-card link" id="btn-copy-sub"><i class="fa-solid fa-link"></i><div class="action-label" id="action-copy">کپی لینک ساب</div></div></div>
+            <div class="action-cell"><div class="action-card qr" id="btn-toggle-qr"><i class="fa-solid fa-qrcode"></i><div class="action-label" id="action-qr">QR Code</div></div></div>
+            <div class="action-cell"><div class="action-card config" id="btn-toggle-config"><i class="fa-solid fa-cloud-arrow-down"></i><div class="action-label" id="action-config">کپی کانفیگ</div></div></div>
+        </div>
+
+        <div class="action-dropdown-container" id="dropdown-tutorial-container">
+            <div class="action-dropdown-menu" id="tutorial-content"></div>
+        </div>
+
+        <div class="action-dropdown-container" id="dropdown-qr-container">
+            <div class="action-dropdown-menu" id="list-qr-ips"><span style="color:#6c6c8c;" id="qr-empty-msg">خالی</span></div>
+        </div>
+        <div class="action-dropdown-container" id="dropdown-config-container">
+            <div class="action-dropdown-menu" id="list-config-ips"><span style="color:#6c6c8c;" id="config-empty-msg">خالی</span></div>
+        </div>
+
+        <div class="designer-card">
+            <div class="designer-info">
+                <span class="designer-text-label" id="designer-lbl">سازنده تم:</span>
+                <span class="designer-name-title en-font">@BitcoinWhale1</span>
+            </div>
+            <a class="designer-tg-btn" href="https://t.me/BitcoinWhale1" target="_blank" title="Telegram"><i class="fa-brands fa-telegram"></i></a>
+        </div>
+    </div>
+
+    <div id="screen-download-apps" class="app-screen">
+        <div class="section-title" id="download-screen-title" style="margin-bottom:16px;">دانلود برنامه ها</div>
+        <div class="download-os-tabs">
+            <div class="os-tab-btn active-tab" id="os-tab-android" onclick="switchDownloadTab('android')"><i class="fa-brands fa-android"></i> <span id="lbl-tab-android">اندروید</span></div>
+            <div class="os-tab-btn" id="os-tab-ios" onclick="switchDownloadTab('ios')"><i class="fa-brands fa-apple"></i> <span id="lbl-tab-ios">آیفون / آیپد</span></div>
+            <div class="os-tab-btn" id="os-tab-desktop" onclick="switchDownloadTab('desktop')"><i class="fa-brands fa-windows"></i> <span id="lbl-tab-desktop">ویندوز / مک</span></div>
+        </div>
+
+        <div class="client-card-item">
+            <a href="#" id="btn-dl-client4" target="_blank" class="client-download-btn">دانلود</a>
+            <div class="client-info-side"><div class="client-details"><div class="client-title-text"><span id="title-client4">Happ</span></div><div class="client-subtitle-text" id="sub-client4">کلاینت رسمی فروشگاه</div></div><div class="client-icon-box"><i class="fa-solid fa-h" id="icon-client4"></i></div></div>
+        </div>
+        <div class="client-card-item">
+            <a href="#" id="btn-dl-client5" target="_blank" class="client-download-btn">دانلود</a>
+            <div class="client-info-side"><div class="client-details"><div class="client-title-text"><span id="title-client5">V2Box</span></div><div class="client-subtitle-text" id="sub-client5">کلاینت رسمی فروشگاه</div></div><div class="client-icon-box"><i class="fa-solid fa-box" id="icon-client5"></i></div></div>
+        </div>
+
+        <div class="client-card-item">
+            <a href="#" id="btn-dl-client1" target="_blank" class="client-download-btn">دانلود</a>
+            <div class="client-info-side"><div class="client-details"><div class="client-title-text"><span id="title-client1">v2rayNG</span></div><div class="client-subtitle-text" id="sub-client1">کلاینت رسمی فروشگاه</div></div><div class="client-icon-box"><i class="fa-solid fa-mobile-screen-button" id="icon-client1"></i></div></div>
+        </div>
+        <div class="client-card-item">
+            <a href="#" id="btn-dl-client2" target="_blank" class="client-download-btn">دانلود</a>
+            <div class="client-info-side"><div class="client-details"><div class="client-title-text"><span id="title-client2">Hiddify Next</span></div><div class="client-subtitle-text" id="sub-client2">کلاینت رسمی فروشگاه</div></div><div class="client-icon-box"><i class="fa-solid fa-shield-halved" id="icon-client2"></i></div></div>
+        </div>
+        <div class="client-card-item">
+            <a href="#" id="btn-dl-client3" target="_blank" class="client-download-btn">دانلود</a>
+            <div class="client-info-side"><div class="client-details"><div class="client-title-text"><span id="title-client3">sing-box</span></div><div class="client-subtitle-text" id="sub-client3">کلاینت رسمی فروشگاه</div></div><div class="client-icon-box"><i class="fa-solid fa-box-open" id="icon-client3"></i></div></div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item-cell"><div class="nav-item active" id="nav-dashboard" onclick="navigateToScreen('dashboard')"><i class="fa-solid fa-house"></i>داشبورد</div></div>
+        <div class="nav-item-cell"><div class="nav-item" id="nav-download" onclick="navigateToScreen('download')"><i class="fa-solid fa-download"></i>دانلود برنامه</div></div>
+    </div>
+
+    <script>
+        const sanaeiTemplateData = {
+            sId: "{{ .sId }}",
+            enabled: {{ .enabled }},
+            expireSeconds: {{ .expire }},
+            downloadByte: {{ .downloadByte }},
+            uploadByte: {{ .uploadByte }},
+            totalByte: {{ .totalByte }},
+            subUrl: "{{ .subUrl }}",
+            subJsonUrl: "{{ .subJsonUrl }}",
+            subClashUrl: "{{ .subClashUrl }}",
+            subTitle: "{{ .subTitle }}",
+            subSupportUrl: "{{ .subSupportUrl }}",
+            datepicker: "{{ .datepicker }}",
+            emails: [{{ range $i, $e := .emails }}{{ if $i }},{{ end }}"{{ $e }}"{{ end }}],
+            links: [{{ range $i, $l := .links }}{{ if $i }},{{ end }}"{{ $l }}"{{ end }}]
+        };
+
+        let currentLang = 'fa';
+        let isServerConnected = sanaeiTemplateData.enabled;
+        let activeServerNode = null;
+        let liveRefreshTimer = null;
+
+        function saveLanguage(lang) { try { localStorage.setItem('vpnDashboardLang', lang); } catch(e) {} }
+        function loadLanguage() { try { return localStorage.getItem('vpnDashboardLang') || 'fa'; } catch(e) { return 'fa'; } }
+
+        function saveTheme(isLight) { try { localStorage.setItem('vpnDashboardTheme', isLight ? 'light' : 'dark'); } catch(e) {} }
+        function loadTheme() { try { return localStorage.getItem('vpnDashboardTheme') || 'dark'; } catch(e) { return 'dark'; } }
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('theme-icon').className = 'fa-solid fa-sun';
+            } else {
+                document.body.classList.remove('light-mode');
+                document.getElementById('theme-icon').className = 'fa-solid fa-moon';
+            }
+        }
+
+        function calculateDaysLeft(expireSeconds) {
+            if (!expireSeconds || expireSeconds <= 0) return null;
+            const now = Date.now();
+            const diff = (expireSeconds * 1000) - now;
+            return diff > 0 ? Math.ceil(diff / (1000 * 60 * 60 * 24)) : -1;
+        }
+
+        function generateExpiryDates(expireSeconds) {
+            const dates = { fa: "--", en: "--", tr: "--", ar: "--" };
+            if (expireSeconds && expireSeconds > 0) {
+                const dateObj = new Date(expireSeconds * 1000);
+                dates.fa = dateObj.toLocaleDateString('fa-IR');
+                dates.en = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                dates.tr = dateObj.toLocaleDateString('tr-TR');
+                dates.ar = dateObj.toLocaleDateString('ar-EG');
+            }
+            return dates;
+        }
+
+        const initialExpiryDates = generateExpiryDates(sanaeiTemplateData.expireSeconds);
+
+        let sanaeiClientData = {
+            username: (sanaeiTemplateData.emails && sanaeiTemplateData.emails.length > 0) ? sanaeiTemplateData.emails[0] : "کاربر",
+            daysLeft: calculateDaysLeft(sanaeiTemplateData.expireSeconds),
+            expireSeconds: sanaeiTemplateData.expireSeconds,
+            expiryDateFa: initialExpiryDates.fa,
+            expiryDateEn: initialExpiryDates.en,
+            expiryDateTr: initialExpiryDates.tr,
+            expiryDateAr: initialExpiryDates.ar,
+            totalByte: sanaeiTemplateData.totalByte,
+            downloadByte: sanaeiTemplateData.downloadByte,
+            uploadByte: sanaeiTemplateData.uploadByte,
+            subUrl: sanaeiTemplateData.subUrl || window.location.href,
+            links: sanaeiTemplateData.links || []
+        };
+
+        function updateConnectionStatus() {
+            if (!sanaeiTemplateData.enabled) { isServerConnected = false; return; }
+            const now = Date.now();
+            const totalUsage = sanaeiClientData.downloadByte + sanaeiClientData.uploadByte;
+            const isExpired = sanaeiClientData.expireSeconds > 0 && (sanaeiClientData.expireSeconds * 1000) < now;
+            const isOverQuota = sanaeiClientData.totalByte > 0 && totalUsage >= sanaeiClientData.totalByte;
+            isServerConnected = !isExpired && !isOverQuota;
+        }
+
+        updateConnectionStatus();
+
+        const appDownloadLinks = {
+            android: {
+                c1: { name: "v2rayNG", url: "https://play.google.com/store/apps/details?id=com.v2ray.ang", icon: "fa-mobile-screen-button" },
+                c2: { name: "Hiddify Next", url: "https://play.google.com/store/apps/details?id=fg.hiddify.com", icon: "fa-shield-halved" },
+                c3: { name: "sing-box", url: "https://play.google.com/store/apps/details?id=io.nekohasekai.sfa", icon: "fa-box-open" },
+                c4: { name: "Happ", url: "https://play.google.com/store/apps/details?id=com.happproxy", icon: "fa-h", recommended: true },
+                c5: { name: "V2Box", url: "https://play.google.com/store/apps/details?id=dev.hexasoftware.v2box", icon: "fa-box", recommended: true }
+            },
+            ios: {
+                c1: { name: "FoXray", url: "https://apps.apple.com/us/app/foxray/id6448898375", icon: "fa-mobile-screen-button" },
+                c2: { name: "Hiddify Next", url: "https://apps.apple.com/us/app/hiddify-next/id6473611382", icon: "fa-shield-halved" },
+                c3: { name: "sing-box", url: "https://apps.apple.com/us/app/sing-box/id6443657551", icon: "fa-box-open" },
+                c4: { name: "Happ", url: "https://apps.apple.com/us/app/happ/id6448971288", icon: "fa-h", recommended: true },
+                c5: { name: "V2Box", url: "#", icon: "fa-box", recommended: true, disabled: true }
+            },
+            desktop: {
+                c1: { name: "v2rayN (Windows)", url: "https://github.com/2dust/v2rayN/releases", icon: "fa-mobile-screen-button" },
+                c2: { name: "Hiddify (Win/Mac)", url: "https://apps.microsoft.com/detail/hiddify", icon: "fa-shield-halved" },
+                c3: { name: "NekoRay (Win/Linux)", url: "https://github.com/MatsuriDayo/nekoray/releases", icon: "fa-box-open" },
+                c4: { name: "Happ", url: "#", icon: "fa-h", recommended: true, disabled: true },
+                c5: { name: "V2Box", url: "#", icon: "fa-box", recommended: true, disabled: true }
+            }
+        };
+
+        const waveIconHTML = `
+            <div class="wave-icon-wrapper">
+                <svg viewBox="0 0 24 24"><path d="M7 23h7.5c2.2 0 4-1.8 4-4v-7.5c0-.8-.7-1.5-1.5-1.5s-1.5.7-1.5 1.5V11h-.5V4.5c0-.8-.7-1.5-1.5-1.5S12 3.7 12 4.5V11h-.5V2.5c0-.8-.7-1.5-1.5-1.5S8.5 1.7 8.5 2.5V11h-.5V5.5c0-.8-.7-1.5-1.5-1.5S5 4.7 5 5.5v10.3c-.6-.7-1.5-1.1-2.4-.9-.9.2-1.5 1.1-1.4 2 .2 1.9 2 4.2 3.8 5.4C5.7 22.7 6.3 23 7 23z" fill="url(#premiumPurpleNeon)"/></svg>
+            </div>`;
+
+        const locales = {
+            fa: {
+                dir:"rtl", greet:"سلام ", badgeActive:"فعال", badgeInactive:"غیرفعال", daysUnit:"روز", remainingLabel:"باقی‌مانده",
+                titleLimit:"حجم کلی", titleTotal:"مصرف کل", titleDownload:"دانلود", titleUpload:"آپلود", connectedServer:"سرورهای متصل",
+                actionTutorial:"آموزش اتصال", actionCopy:"کپی لینک ساب", actionCopied:"کپی شد!", actionQr:"QR Code", actionConfig:"کپی کانفیگ",
+                copyAllBtn:"کپی همه کانفیگ‌ها", navDashboard:"<i class='fa-solid fa-house'></i>داشبورد", navDownload:"<i class='fa-solid fa-download'></i>دانلود برنامه",
+                dlScreenTitle:"دانلود برنامه ها", dlSubtitle:"کلاینت رسمی فروشگاه", btnDl:"دانلود", tabAndroid:"اندروید", tabIos:"آیفون / آیپد", tabDesktop:"ویندوز / مک",
+                designerLbl:"سازنده تم:", expiredText:"منقضی", unlimitedText:"نامحدود", emptyConfigs:"خالی", copyBtnText:"کپی", recommendedText:"پیشنهادی",
+                serverPlaceholderName:"---", serverPlaceholderCity:"---", serverPlaceholderPing:"---",
+                expiryLabel:"انقضا",
+                tutorialOkTitle:"نتیجه تست: همه کانفیگ‌ها OK هستند",
+                tutorialOkDesc:"لینک را داخل نرم‌افزار بگذارید، آپدیت بزنید Real Delay بگیرید و به کمترین پینگ وصل شوید.",
+                tutorialStep1Title:"افزودن با لینک ساب",
+                tutorialStep1Desc:"در داشبورد روی دکمه «کپی لینک ساب» بزنید. سپس در V2Box وارد بخش Subscriptions شوید، گزینه Add Subscription را انتخاب کنید، لینک را Paste کرده و در پایان OK بزنید.",
+                tutorialStep2Title:"افزودن با کانفیگ",
+                tutorialStep2Desc:"در داشبورد از بخش «کپی کانفیگ»، یکی از کانفیگ‌ها را کپی کنید. سپس در V2Box گزینه Add Config را انتخاب کنید، محتوای کانفیگ را Paste کرده و OK بزنید.",
+                tutorialStep3Title:"افزودن با QR Code",
+                tutorialStep3Desc:"در داشبورد، QR Code را نمایش دهید. سپس در V2Box از گزینه Scan QR استفاده کرده و کد QR Code را اسکن کنید."
+            },
+            en: {
+                dir:"ltr", greet:"Hello ", badgeActive:"Active", badgeInactive:"Inactive", daysUnit:"Days", remainingLabel:"Remaining",
+                titleLimit:"Total Limit", titleTotal:"Total Usage", titleDownload:"Download", titleUpload:"Upload", connectedServer:"Connected Servers",
+                actionTutorial:"Tutorial", actionCopy:"Copy Sub Link", actionCopied:"Copied!", actionQr:"QR Code", actionConfig:"Copy Config",
+                copyAllBtn:"Copy All Configs", navDashboard:"<i class='fa-solid fa-house'></i>Dashboard", navDownload:"<i class='fa-solid fa-download'></i>App",
+                dlScreenTitle:"Download Clients", dlSubtitle:"Official Store Client", btnDl:"Get App", tabAndroid:"Android", tabIos:"iPhone / iPad", tabDesktop:"Win / Mac",
+                designerLbl:"Theme Developer:", expiredText:"Expired", unlimitedText:"Unlimited", emptyConfigs:"Empty", copyBtnText:"Copy", recommendedText:"Recommended",
+                serverPlaceholderName:"---", serverPlaceholderCity:"---", serverPlaceholderPing:"---",
+                expiryLabel:"Expiry",
+                tutorialOkTitle:"Test result: All configs are OK",
+                tutorialOkDesc:"Put the link into the app, update, get Real Delay and connect to the lowest ping.",
+                tutorialStep1Title:"Add with Sub Link",
+                tutorialStep1Desc:"Tap \"Copy Sub Link\" on the dashboard. Then in V2Box go to Subscriptions, select Add Subscription, paste the link and press OK.",
+                tutorialStep2Title:"Add with Config",
+                tutorialStep2Desc:"Copy a config from the \"Copy Config\" section. In V2Box, select Add Config, paste the content and press OK.",
+                tutorialStep3Title:"Add with QR Code",
+                tutorialStep3Desc:"Display the QR Code on the dashboard. Then in V2Box use the Scan QR option and scan the code."
+            },
+            tr: {
+                dir:"ltr", greet:"Merhaba ", badgeActive:"Aktif", badgeInactive:"Pasif", daysUnit:"Gün", remainingLabel:"Kalan",
+                titleLimit:"Toplam Kota", titleTotal:"Toplam", titleDownload:"İndirme", titleUpload:"Yükleme", connectedServer:"Bağlı Sunucular",
+                actionTutorial:"Rehber", actionCopy:"Sub Linki Kopyala", actionCopied:"Kopyalandı!", actionQr:"QR Kodu", actionConfig:"Konfig Kopyala",
+                copyAllBtn:"Tüm Konfigleri Kopyala", navDashboard:"<i class='fa-solid fa-house'></i>Panel", navDownload:"<i class='fa-solid fa-download'></i>Uygulama",
+                dlScreenTitle:"Uygulamaları İndir", dlSubtitle:"Resmi Mağaza İstemcisi", btnDl:"İndir", tabAndroid:"Android", tabIos:"iPhone / iPad", tabDesktop:"Win / Mac",
+                designerLbl:"Tema Geliştirici:", expiredText:"Süresi Doldu", unlimitedText:"Sınırsız", emptyConfigs:"Boş", copyBtnText:"Kopyala", recommendedText:"Önerilen",
+                serverPlaceholderName:"---", serverPlaceholderCity:"---", serverPlaceholderPing:"---",
+                expiryLabel:"Bitiş",
+                tutorialOkTitle:"Test sonucu: Tüm yapılandırmalar OK",
+                tutorialOkDesc:"Bağlantıyı uygulamaya ekleyin, güncelleyin, Gerçek Gecikme alın ve en düşük ping'e bağlanın.",
+                tutorialStep1Title:"Sub Bağlantısı ile Ekle",
+                tutorialStep1Desc:"Panodaki \"Sub Linki Kopyala\" düğmesine basın. Ardından V2Box'ta Abonelikler'e gidin, Abonelik Ekle'yi seçin, bağlantıyı yapıştırın ve Tamam'a basın.",
+                tutorialStep2Title:"Yapılandırma ile Ekle",
+                tutorialStep2Desc:"\"Konfig Kopyala\" bölümünden bir yapılandırma kopyalayın. V2Box'ta Yapılandırma Ekle'yi seçin, içeriği yapıştırın ve Tamam'a basın.",
+                tutorialStep3Title:"QR Kod ile Ekle",
+                tutorialStep3Desc:"Panodaki QR Kodu görüntüleyin. Ardından V2Box'ta QR Tara seçeneğini kullanarak kodu tarayın."
+            },
+            ar: {
+                dir:"rtl", greet:"أهلاً ", badgeActive:"نشط", badgeInactive:"غير نشط", daysUnit:"يوم", remainingLabel:"المتبقي",
+                titleLimit:"الحجم الكلي", titleTotal:"الإجمالي", titleDownload:"تحميل", titleUpload:"رفع", connectedServer:"الخوادم المتصلة",
+                actionTutorial:"دليل الاتصال", actionCopy:"نسخ رابط الساب", actionCopied:"تم النسخ!", actionQr:"رمز QR", actionConfig:"نسخ التكوين",
+                copyAllBtn:"نسخ كل التكوينات", navDashboard:"<i class='fa-solid fa-house'></i>الرئيسية", navDownload:"<i class='fa-solid fa-download'></i>التطبيق",
+                dlScreenTitle:"تحميل التطبيقات", dlSubtitle:"عميل المتجر الرسمي", btnDl:"تحميل", tabAndroid:"أندروید", tabIos:"آيفون / آيباد", tabDesktop:"ویندوز / ماک",
+                designerLbl:"مطور القالب:", expiredText:"منتهي", unlimitedText:"غير محدود", emptyConfigs:"خالي", copyBtnText:"نسخ", recommendedText:"مقترح",
+                serverPlaceholderName:"---", serverPlaceholderCity:"---", serverPlaceholderPing:"---",
+                expiryLabel:"انتهاء",
+                tutorialOkTitle:"نتيجة الاختبار: جميع التكوينات OK",
+                tutorialOkDesc:"ضع الرابط داخل التطبيق، حدث، احصل على التأخير الحقيقي واتصل بأقل بينغ.",
+                tutorialStep1Title:"إضافة عبر رابط الاشتراك",
+                tutorialStep1Desc:"انقر على \"نسخ رابط الاشتراك\" في لوحة التحكم. ثم في V2Box، انتقل إلى الاشتراكات، اختر إضافة اشتراك، الصق الرابط واضغط موافق.",
+                tutorialStep2Title:"إضافة عبر التكوين",
+                tutorialStep2Desc:"انسخ تكوينًا من قسم \"نسخ التكوين\". في V2Box، اختر إضافة تكوين، الصق المحتوى واضغط موافق.",
+                tutorialStep3Title:"إضافة عبر رمز QR",
+                tutorialStep3Desc:"اعرض رمز QR في لوحة التحكم. ثم في V2Box استخدم خيار مسح QR وامسح الرمز."
+            }
+        };
+
+        function decodeBase64Unicode(str) { const clean = str.replace(/-/g, '+').replace(/_/g, '/').trim(); const binary = atob(clean); const bytes = Uint8Array.from(binary, c => c.charCodeAt(0)); return new TextDecoder('utf-8').decode(bytes); }
+        function parseSubscriptionUserinfo(headerValue) { const result = { upload: null, download: null, total: null, expire: null }; if (!headerValue) return result; headerValue.split(';').forEach(part => { const [key, val] = part.trim().split('='); if (key && val !== undefined && result.hasOwnProperty(key.trim())) { result[key.trim()] = parseInt(val.trim(), 10); } }); return result; }
+
+        async function fetchLiveSubscriptionData() {
+            if (!sanaeiClientData.subUrl) return;
+            try {
+                const response = await fetch(sanaeiClientData.subUrl, { method: 'GET', cache: 'no-store', headers: { 'Accept': 'text/plain' } });
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const userInfoHeader = response.headers.get('subscription-userinfo');
+                const bodyText = (await response.text()).trim();
+                if (bodyText) {
+                    let decodedLinks = [];
+                    try { decodedLinks = decodeBase64Unicode(bodyText).split('\n').map(l => l.trim()).filter(Boolean); } catch (e) { decodedLinks = bodyText.split('\n').map(l => l.trim()).filter(Boolean); }
+                    if (decodedLinks.length > 0) { sanaeiClientData.links = decodedLinks; }
+                }
+                if (userInfoHeader) {
+                    const info = parseSubscriptionUserinfo(userInfoHeader);
+                    if (info.download !== null && info.upload !== null) { sanaeiClientData.downloadByte = info.download; sanaeiClientData.uploadByte = info.upload; }
+                    if (info.total !== null) sanaeiClientData.totalByte = info.total;
+                    if (info.expire !== null) { sanaeiClientData.expireSeconds = info.expire; sanaeiClientData.daysLeft = calculateDaysLeft(info.expire); const dates = generateExpiryDates(info.expire); sanaeiClientData.expiryDateFa = dates.fa; sanaeiClientData.expiryDateEn = dates.en; sanaeiClientData.expiryDateTr = dates.tr; sanaeiClientData.expiryDateAr = dates.ar; }
+                }
+                updateConnectionStatus(); renderAll();
+            } catch (error) { console.error("❌ خطا در دریافت اطلاعات زنده:", error); }
+        }
+
+        function renderAll() { renderPanelData(); renderServers(); renderActionMenus(); renderTutorialContent(); updateAllPings(); }
+
+        function updateAllPings() {
+            const badges = document.querySelectorAll('.server-card[data-link] .ping-badge');
+            if (!isServerConnected) { badges.forEach(badge => { badge.textContent = 'n/a'; badge.style.color = '#FF8C00'; }); return; }
+            document.querySelectorAll('.server-card[data-link]').forEach(card => { pingServer(card.getAttribute('data-link'), card); });
+        }
+
+        function updatePingBadge(cardElement, latencyMs) {
+            const badge = cardElement.querySelector('.ping-badge');
+            if (!badge) return;
+            if (!isServerConnected) { badge.textContent = 'n/a'; badge.style.color = '#FF8C00'; return; }
+            if (latencyMs !== undefined && latencyMs !== null) { badge.textContent = latencyMs + ' ms'; badge.style.color = '#FF8C00'; }
+            else { badge.textContent = 'n/a'; badge.style.color = '#FF8C00'; }
+        }
+
+        function pingServer(link, cardElement) {
+            const badge = cardElement.querySelector('.ping-badge');
+            if (!badge) return;
+            if (!isServerConnected) { badge.textContent = 'n/a'; badge.style.color = '#FF8C00'; return; }
+            badge.textContent = '...';
+            const parsed = parseConfigLink(link);
+            const host = parsed.host;
+            if (!host) {
+                updatePingBadge(cardElement, null);
+                return;
+            }
+            const img = new Image();
+            const start = Date.now();
+            let resolved = false;
+            const timeout = setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    img.src = '';
+                    updatePingBadge(cardElement, null);
+                }
+            }, 3000);
+            img.onload = img.onerror = () => {
+                if (!resolved) {
+                    resolved = true;
+                    clearTimeout(timeout);
+                    const latency = Date.now() - start;
+                    updatePingBadge(cardElement, latency);
+                }
+            };
+            img.src = `https://${host}/favicon.ico?t=${Date.now()}`;
+        }
+
+        function renderPanelData() {
+            const data = locales[currentLang] || locales.fa;
+            document.getElementById("user-name").innerHTML = `${waveIconHTML}<span class="greeting-text">${data.greet + sanaeiClientData.username}</span>`;
+            if (sanaeiClientData.daysLeft === -1) document.getElementById("live-days-count").innerHTML = `<span style="font-size:22px; color:#EF4444;">${data.expiredText}</span>`;
+            else if (sanaeiClientData.daysLeft === null) document.getElementById("live-days-count").innerHTML = `<span style="font-size:22px;">${data.unlimitedText}</span>`;
+            else document.getElementById("live-days-count").innerHTML = `${sanaeiClientData.daysLeft} <span id="days-label">${data.daysUnit}</span>`;
+            document.getElementById("stat-limit").innerText = sanaeiClientData.totalByte > 0 ? formatBytes(sanaeiClientData.totalByte) : data.unlimitedText;
+
+            const expiryMap = { fa: sanaeiClientData.expiryDateFa, en: sanaeiClientData.expiryDateEn, tr: sanaeiClientData.expiryDateTr, ar: sanaeiClientData.expiryDateAr };
+            const expiryLabel = data.expiryLabel + ": ";
+            if (sanaeiClientData.expireSeconds > 0) {
+                document.getElementById("expire-date").innerText = expiryLabel + (expiryMap[currentLang] || expiryMap.fa);
+            } else {
+                document.getElementById("expire-date").innerText = expiryLabel + data.unlimitedText;
+            }
+
+            const totalUsage = sanaeiClientData.downloadByte + sanaeiClientData.uploadByte;
+            document.getElementById("stat-dl-val").innerText = formatBytes(sanaeiClientData.downloadByte);
+            document.getElementById("stat-ul-val").innerText = formatBytes(sanaeiClientData.uploadByte);
+            document.getElementById("stat-total-val").innerText = formatBytes(totalUsage);
+            let percentRemaining = 100;
+            if (sanaeiClientData.totalByte > 0) { let usage = (totalUsage / sanaeiClientData.totalByte) * 100; percentRemaining = Math.round(100 - usage); if (percentRemaining < 0) percentRemaining = 0; if (percentRemaining > 100) percentRemaining = 100; }
+            document.getElementById("live-percent-display").innerText = percentRemaining + "%";
+            document.getElementById("sub-progress-circle").style.setProperty('--percent', percentRemaining);
+            document.getElementById("main-sub-card").classList.toggle("disconnected", !isServerConnected);
+            updateStatusUI();
+        }
+
+        function parseConfigLink(rawLink) { const result = { protocol: 'unknown', remark: '', host: '', port: '', link: rawLink }; try { const schemeMatch = rawLink.match(/^([a-zA-Z0-9]+):\/\//); if (!schemeMatch) return result; result.protocol = schemeMatch[1].toLowerCase(); if (result.protocol === 'vmess') { const json = JSON.parse(decodeBase64Unicode(rawLink.replace(/^vmess:\/\//, ''))); result.remark = json.ps || ''; result.host = json.add || ''; result.port = json.port || ''; } else { const u = new URL(rawLink); result.remark = decodeURIComponent((u.hash || '').replace(/^#/, '')); result.host = u.hostname || ''; result.port = u.port || ''; } } catch (e) {} return result; }
+        function getProtocolDetails(link) { const parsed = parseConfigLink(link); if (parsed.protocol === 'vmess') { try { const json = JSON.parse(decodeBase64Unicode(link.replace(/^vmess:\/\//, ''))); const net = json.net || 'tcp'; const security = json.tls === 'tls' ? 'tls' : (json.tls === 'reality' ? 'reality' : 'none'); return { parts: [parsed.protocol, net, security], full: `${parsed.protocol}+${net}+${security}` }; } catch (e) { return { parts: [parsed.protocol], full: parsed.protocol }; } } else if (parsed.protocol === 'vless' || parsed.protocol === 'trojan') { try { const u = new URL(link); const type = u.searchParams.get('type') || 'tcp'; const security = u.searchParams.get('security') || 'none'; return { parts: [parsed.protocol, type, security], full: `${parsed.protocol}+${type}+${security}` }; } catch (e) { return { parts: [parsed.protocol], full: parsed.protocol }; } } else if (parsed.protocol === 'ss') { try { const b64 = link.replace(/^ss:\/\//, '').split('#')[0]; const decoded = atob(b64); const method = decoded.split(':')[0] || 'unknown'; return { parts: ['ss', method], full: `ss+${method}` }; } catch (e) { return { parts: [parsed.protocol], full: parsed.protocol }; } } return { parts: [parsed.protocol], full: parsed.protocol }; }
+        
+        function extractCountryInfo(parsedConfig) {
+            const remark = (parsedConfig.remark || "").trim();
+            const host = parsedConfig.host || "";
+            const text = remark.replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '').trim();
+            const parts = text.split(/[-\u2013\u2014|: ]+/).map(p => p.trim()).filter(p => p);
+            let countryText = parts[0] || "";
+            let code = "";
+            const flagMatch = remark.match(/[\u{1F1E0}-\u{1F1FF}]{2}/gu);
+            if (flagMatch) {
+                const cp = [...flagMatch[0]];
+                code = String.fromCodePoint(cp[0].codePointAt(0)-0x1F1E6+0x61, cp[1].codePointAt(0)-0x1F1E6+0x61);
+            }
+            if (!code && countryText) {
+                const rn = new Intl.DisplayNames(['en'], {type: 'region'});
+                const ccList = ['de','nl','fr','gb','us','ca','tr','ae','sg','jp','fi','se','no','ch','it','es','pt','pl','ru','ua','ir','cn','hk','tw','kr','in','br','ar','au','at','be','dk','gr','ie','il','mx','nz','za'];
+                const lc = countryText.toLowerCase();
+                for (const c of ccList) {
+                    if (rn.of(c).toLowerCase() === lc) { code = c; break; }
+                }
+                if (!code) {
+                    const aliasMap = { 'usa': 'us', 'uk': 'gb', 'uae': 'ae', 'korea': 'kr', 'russia': 'ru', 'turkey': 'tr', 'germany': 'de', 'france': 'fr', 'italy': 'it', 'spain': 'es', 'china': 'cn', 'japan': 'jp', 'brazil': 'br', 'australia': 'au', 'canada': 'ca', 'india': 'in', 'mexico': 'mx', 'netherlands': 'nl', 'belgium': 'be', 'sweden': 'se', 'norway': 'no', 'finland': 'fi', 'denmark': 'dk', 'greece': 'gr', 'ireland': 'ie', 'austria': 'at', 'switzerland': 'ch', 'portugal': 'pt', 'poland': 'pl', 'israel': 'il', 'south africa': 'za', 'new zealand': 'nz', 'singapore': 'sg', 'hong kong': 'hk', 'taiwan': 'tw' };
+                    if (aliasMap[lc]) code = aliasMap[lc];
+                    else if (countryText.length === 2) code = countryText.toLowerCase();
+                }
+            }
+            if (!code || code.length !== 2) code = 'unknown';
+            let englishName = 'Unknown';
+            try {
+                if (code !== 'unknown') {
+                    englishName = new Intl.DisplayNames(['en'], {type: 'region'}).of(code.toUpperCase()) || 'Unknown';
+                }
+            } catch(e) {}
+            return { countryName: englishName, countryCode: code, cityName: (parts[1] || host || ""), host };
+        }
+
+        let currentVisibleServers = [];
+        let hiddenServers = [];
+
+        function renderServers() {
+            const data = locales[currentLang] || locales.fa;
+            const container = document.getElementById("servers-container");
+            const allContainer = document.getElementById("list-all-servers");
+            const toggleBtn = document.getElementById("toggle-all-servers-btn");
+            const dropdownContainer = document.getElementById("dropdown-all-servers-container");
+
+            container.innerHTML = "";
+            allContainer.innerHTML = "";
+            dropdownContainer.classList.remove("show");
+            toggleBtn.style.display = "none";
+
+            const links = sanaeiClientData.links || [];
+            if (links.length === 0) { for (let i = 0; i < 2; i++) container.appendChild(createEmptyServerCard(data, i)); return; }
+            const parsedLinks = links.map(link => parseConfigLink(link));
+            if (links.length <= 2) { parsedLinks.forEach((parsed, idx) => container.appendChild(createLiveServerCard(parsed, data, idx))); }
+            else {
+                const indices = [...Array(links.length).keys()];
+                for (let i = indices.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [indices[i], indices[j]] = [indices[j], indices[i]]; }
+                const visibleIdx = indices.slice(0, 2); const hiddenIdx = indices.slice(2);
+                currentVisibleServers = visibleIdx.map(i => parsedLinks[i]); hiddenServers = hiddenIdx.map(i => parsedLinks[i]);
+                currentVisibleServers.forEach((parsed, idx) => container.appendChild(createLiveServerCard(parsed, data, idx)));
+                hiddenServers.forEach((parsed) => allContainer.appendChild(createLiveServerCardSmall(parsed, data)));
+                toggleBtn.style.display = "inline-block";
+            }
+        }
+
+        function createEmptyServerCard(localeData, index) {
+            const cell = document.createElement("div"); cell.className = "server-card-cell";
+            cell.innerHTML = `<div class="server-card" id="srv-empty-${index}"><div class="flag-info"><div class="flag flag-placeholder"><i class="fa-solid fa-server"></i></div><div><div class="srv-name srv-name-placeholder">${localeData.serverPlaceholderName}</div><div class="srv-city srv-city-placeholder">${localeData.serverPlaceholderCity}</div></div></div><div class="srv-meta"><div class="proto-badge proto-badge-placeholder">${localeData.serverPlaceholderPing}</div><div class="ping-badge">n/a</div></div></div>`;
+            return cell;
+        }
+
+        function createLiveServerCard(parsedConfig, localeData, index) {
+            const { countryName, countryCode, cityName } = extractCountryInfo(parsedConfig);
+            const flagUrl = countryCode !== 'unknown' ? `https://flagcdn.com/w80/${countryCode}.png` : '';
+            const flagStyle = flagUrl ? `background-image:url('${flagUrl}');` : 'background:#2C2C3E;';
+            const flagContent = flagUrl ? '' : '<i class="fa-solid fa-globe" style="color:#6c6c8c;"></i>';
+            const serverId = `${countryCode}-${index}`;
+            const cell = document.createElement("div"); cell.className = "server-card-cell";
+            cell.innerHTML = `<div class="server-card" id="srv-${serverId}" data-link="${parsedConfig.link}"><div class="flag-info"><div class="flag" style="${flagStyle}">${flagContent}</div><div><div class="srv-name">${countryName}</div><div class="srv-city">${cityName}</div></div></div><div class="srv-meta"><div class="proto-badge">${parsedConfig.protocol}</div><div class="ping-badge">...</div></div></div>`;
+            return cell;
+        }
+
+        function createLiveServerCardSmall(parsedConfig, localeData) {
+            const { countryName, countryCode } = extractCountryInfo(parsedConfig);
+            const flagUrl = countryCode !== 'unknown' ? `https://flagcdn.com/w80/${countryCode}.png` : '';
+            const flagHtml = flagUrl ? `<div class="action-mini-flag" style="background-image:url('${flagUrl}');"></div>` : `<div class="action-mini-flag" style="background:#2C2C3E;"><i class="fa-solid fa-globe"></i></div>`;
+            const item = document.createElement("div"); item.className = "ip-row-item";
+            item.innerHTML = `<div class="ip-details-left">${flagHtml}<div class="ip-meta-block"><div class="ip-address-text en-font">${countryName}</div></div></div><button class="ip-copy-btn" data-config-text="${encodeURIComponent(parsedConfig.link)}"><i class="fa-solid fa-copy"></i> ${localeData.copyBtnText}</button>`;
+            item.querySelector('.ip-copy-btn').addEventListener('click', function(e) { e.stopPropagation(); navigator.clipboard.writeText(decodeURIComponent(this.dataset.configText)).then(() => { this.innerHTML = `<i class="fa-solid fa-check"></i> ${localeData.actionCopied}`; this.style.background="#22C55E"; this.style.color="#fff"; setTimeout(() => { this.innerHTML = `<i class="fa-solid fa-copy"></i> ${localeData.copyBtnText}`; this.style.background=""; this.style.color=""; }, 2000); }); });
+            return item;
+        }
+
+        function toggleAllServersDropdown() { document.getElementById("dropdown-all-servers-container").classList.toggle("show"); }
+
+        function formatBytes(bytes) { if (bytes === 0) return "0 B"; if (!bytes || bytes < 0) return "---"; const k = 1024; const sizes = ["Bytes", "KB", "MB", "GB", "TB"]; const i = Math.floor(Math.log(bytes) / Math.log(k)); return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]; }
+
+        function renderActionMenus() {
+            const data = locales[currentLang] || locales.fa;
+            const links = sanaeiClientData.links || [];
+            const qrContainer = document.getElementById("list-qr-ips");
+            const configContainer = document.getElementById("list-config-ips");
+            qrContainer.innerHTML = ""; configContainer.innerHTML = "";
+            if (links.length === 0) { qrContainer.innerHTML = `<span style="color:#6c6c8c;">${data.emptyConfigs}</span>`; configContainer.innerHTML = `<span style="color:#6c6c8c;">${data.emptyConfigs}</span>`; return; }
+            const copyAllBtn = document.createElement("button"); copyAllBtn.className = "copy-all-btn"; copyAllBtn.innerHTML = `<i class="fa-solid fa-copy"></i> ${data.copyAllBtn}`;
+            copyAllBtn.addEventListener('click', () => { navigator.clipboard.writeText(links.join('\n')).then(() => { copyAllBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${data.actionCopied}`; copyAllBtn.style.background="#22C55E"; setTimeout(() => { copyAllBtn.innerHTML = `<i class="fa-solid fa-copy"></i> ${data.copyAllBtn}`; copyAllBtn.style.background=""; }, 2000); }); });
+            configContainer.appendChild(copyAllBtn);
+            links.forEach(rawLink => { const parsed = parseConfigLink(rawLink); qrContainer.appendChild(buildQrItem(parsed, data)); configContainer.appendChild(buildConfigItem(parsed, data)); });
+        }
+
+        function buildProtocolBadge(protocolDetails) {
+            const parts = protocolDetails.parts || [];
+            if (parts.length === 0) return '';
+            return parts.map((part, idx) => {
+                let cls = 'proto-part-1';
+                if (parts.length >= 3) { if (idx === 0) cls = 'proto-part-1'; else if (idx === 1) cls = 'proto-part-2'; else cls = 'proto-part-3'; }
+                else if (parts.length === 2) { if (idx === 0) cls = 'proto-part-1'; else cls = 'proto-part-2'; }
+                return `<span class="${cls}">${part}</span>`;
+            }).join('<span style="color: rgba(255,255,255,0.4); margin: 0 1px;">+</span>');
+        }
+
+        function buildQrItem(parsed, data) {
+            const flagInfo = extractCountryInfo(parsed);
+            const flagUrl = flagInfo.countryCode!=='unknown' ? `https://flagcdn.com/w80/${flagInfo.countryCode}.png` : '';
+            const flagHtml = flagUrl ? `<div class="action-mini-flag" style="background-image:url('${flagUrl}');"></div>` : `<div class="action-mini-flag" style="background:#2C2C3E;"><i class="fa-solid fa-globe"></i></div>`;
+            const protocolDetails = getProtocolDetails(parsed.link);
+            const item = document.createElement("div"); item.className="ip-row-item";
+            item.innerHTML = `<div class="ip-details-left">${flagHtml}<div class="qr-modern-wrapper"><img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(parsed.link)}" alt="QR"></div><div class="ip-meta-block"><div class="ip-address-text en-font">${parsed.remark || parsed.host}</div><span class="ip-protocol-badge-box en-font">${buildProtocolBadge(protocolDetails)}</span></div></div><button class="ip-copy-btn" data-config-text="${encodeURIComponent(parsed.link)}"><i class="fa-solid fa-copy"></i> ${data.copyBtnText}</button>`;
+            item.querySelector('.ip-copy-btn').addEventListener('click', function(e){ e.stopPropagation(); navigator.clipboard.writeText(decodeURIComponent(this.dataset.configText)).then(()=>{ this.innerHTML=`<i class="fa-solid fa-check"></i> ${data.actionCopied}`; this.style.background="#22C55E"; this.style.color="#fff"; setTimeout(()=>{ this.innerHTML=`<i class="fa-solid fa-copy"></i> ${data.copyBtnText}`; this.style.background=""; this.style.color=""; },2000); }); });
+            return item;
+        }
+
+        function buildConfigItem(parsed, data) {
+            const flagInfo = extractCountryInfo(parsed);
+            const flagUrl = flagInfo.countryCode!=='unknown' ? `https://flagcdn.com/w80/${flagInfo.countryCode}.png` : '';
+            const flagHtml = flagUrl ? `<div class="action-mini-flag" style="background-image:url('${flagUrl}');"></div>` : `<div class="action-mini-flag" style="background:#2C2C3E;"><i class="fa-solid fa-globe"></i></div>`;
+            const protocolDetails = getProtocolDetails(parsed.link);
+            const item = document.createElement("div"); item.className="ip-row-item";
+            item.innerHTML = `<div class="ip-details-left">${flagHtml}<div class="ip-meta-block"><div class="ip-address-text en-font">${parsed.remark || parsed.host}</div><span class="ip-protocol-badge-box en-font">${buildProtocolBadge(protocolDetails)}</span></div></div><button class="ip-copy-btn" data-config-text="${encodeURIComponent(parsed.link)}"><i class="fa-solid fa-copy"></i> ${data.copyBtnText}</button>`;
+            item.querySelector('.ip-copy-btn').addEventListener('click', function(e){ e.stopPropagation(); navigator.clipboard.writeText(decodeURIComponent(this.dataset.configText)).then(()=>{ this.innerHTML=`<i class="fa-solid fa-check"></i> ${data.actionCopied}`; this.style.background="#22C55E"; this.style.color="#fff"; setTimeout(()=>{ this.innerHTML=`<i class="fa-solid fa-copy"></i> ${data.copyBtnText}`; this.style.background=""; this.style.color=""; },2000); }); });
+            return item;
+        }
+
+        function renderTutorialContent() {
+            const data = locales[currentLang] || locales.fa;
+            const container = document.getElementById("tutorial-content");
+            container.innerHTML = `
+                <div class="tutorial-ok-box">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span><strong>${data.tutorialOkTitle}</strong><br>${data.tutorialOkDesc}</span>
+                </div>
+                <div class="tutorial-step">
+                    <div class="tutorial-step-icon"><i class="fa-solid fa-link"></i></div>
+                    <div class="tutorial-step-content">
+                        <div class="tutorial-step-title">${data.tutorialStep1Title}</div>
+                        <div class="tutorial-step-desc">${data.tutorialStep1Desc}</div>
+                    </div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="tutorial-step-icon"><i class="fa-solid fa-code"></i></div>
+                    <div class="tutorial-step-content">
+                        <div class="tutorial-step-title">${data.tutorialStep2Title}</div>
+                        <div class="tutorial-step-desc">${data.tutorialStep2Desc}</div>
+                    </div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="tutorial-step-icon"><i class="fa-solid fa-qrcode"></i></div>
+                    <div class="tutorial-step-content">
+                        <div class="tutorial-step-title">${data.tutorialStep3Title}</div>
+                        <div class="tutorial-step-desc">${data.tutorialStep3Desc}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectLanguage(lang) {
+            currentLang = lang; saveLanguage(lang);
+            const data = locales[lang] || locales.fa;
+            document.getElementById("lang-text").innerText = lang.toUpperCase();
+            document.getElementById("html-root").setAttribute("dir", data.dir);
+            document.getElementById("remaining-label").innerText = data.remainingLabel;
+            document.getElementById("title-limit").innerText = data.titleLimit;
+            document.getElementById("title-total").innerText = data.titleTotal;
+            document.getElementById("title-download").innerText = data.titleDownload;
+            document.getElementById("title-upload").innerText = data.titleUpload;
+            document.getElementById("connected-server-title").innerText = data.connectedServer;
+            document.getElementById("action-tutorial").innerText = data.actionTutorial;
+            document.getElementById("action-copy").innerText = data.actionCopy;
+            document.getElementById("action-qr").innerText = data.actionQr;
+            document.getElementById("action-config").innerText = data.actionConfig;
+            document.getElementById("download-screen-title").innerText = data.dlScreenTitle;
+            document.getElementById("lbl-tab-android").innerText = data.tabAndroid;
+            document.getElementById("lbl-tab-ios").innerText = data.tabIos;
+            document.getElementById("lbl-tab-desktop").innerText = data.tabDesktop;
+            document.getElementById("designer-lbl").innerText = data.designerLbl;
+            document.getElementById("nav-dashboard").innerHTML = `<i class='fa-solid fa-house'></i>${data.navDashboard.replace(/<.*?>/g, '')}`;
+            document.getElementById("nav-download").innerHTML = `<i class='fa-solid fa-download'></i>${data.navDownload.replace(/<.*?>/g, '')}`;
+            renderAll();
+            switchDownloadTab(document.querySelector('.os-tab-btn.active-tab')?.id?.replace('os-tab-','') || 'android');
+        }
+
+        function updateStatusUI() {
+            const data = locales[currentLang] || locales.fa;
+            const badgeText = document.getElementById("badge-text");
+            const iconMark = document.getElementById("status-icon-mark");
+            if (isServerConnected) { badgeText.innerText = data.badgeActive; iconMark.className = "fa-solid fa-check"; }
+            else { badgeText.innerText = data.badgeInactive; iconMark.className = "fa-solid fa-xmark"; }
+        }
+
+        document.getElementById("btn-copy-sub").addEventListener("click", function(e) { e.stopPropagation(); const data = locales[currentLang]||locales.fa; navigator.clipboard.writeText(sanaeiClientData.subUrl || window.location.href).then(() => { const lbl = document.getElementById("action-copy"); lbl.innerText = data.actionCopied; lbl.style.color="#22C55E"; setTimeout(() => { lbl.innerText = data.actionCopy; lbl.style.color=""; }, 2000); }); });
+        document.getElementById("btn-toggle-qr").addEventListener("click", (e) => { e.stopPropagation(); closeAllDropdownsExcept('dropdown-qr-container'); document.getElementById("dropdown-qr-container").classList.toggle("show"); });
+        document.getElementById("btn-toggle-config").addEventListener("click", (e) => { e.stopPropagation(); closeAllDropdownsExcept('dropdown-config-container'); document.getElementById("dropdown-config-container").classList.toggle("show"); });
+        document.getElementById("btn-toggle-tutorial").addEventListener("click", (e) => { e.stopPropagation(); closeAllDropdownsExcept('dropdown-tutorial-container'); document.getElementById("dropdown-tutorial-container").classList.toggle("show"); });
+
+        function closeAllDropdownsExcept(exceptId) {
+            const dropdowns = ['dropdown-qr-container', 'dropdown-config-container', 'dropdown-all-servers-container', 'dropdown-tutorial-container'];
+            dropdowns.forEach(id => { if (id !== exceptId) document.getElementById(id).classList.remove('show'); });
+        }
+
+        function triggerProfileUpload() { document.getElementById('profile-file-input').click(); }
+        function handleProfileImage(event) { const file = event.target.files[0]; if (file) { const reader = new FileReader(); const wrapper = document.getElementById('profile-wrapper'); wrapper.classList.add('uploading'); reader.onload = function(e) { setTimeout(() => { document.getElementById('profile-display-img').style.backgroundImage = `url('${e.target.result}')`; document.getElementById('default-avatar').style.opacity = '0'; document.getElementById('plus-icon').style.display = 'none'; try { localStorage.setItem('userProfilePic', e.target.result); } catch(err) {} wrapper.classList.remove('uploading'); }, 1200); }; reader.readAsDataURL(file); } }
+
+        function navigateToScreen(screen) {
+            document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active-screen'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if (screen === 'dashboard') { document.getElementById('screen-dashboard').classList.add('active-screen'); document.getElementById('nav-dashboard').classList.add('active'); }
+            else { document.getElementById('screen-download-apps').classList.add('active-screen'); document.getElementById('nav-download').classList.add('active'); switchDownloadTab('android'); }
+        }
+
+        function switchDownloadTab(os) {
+            document.querySelectorAll('.os-tab-btn').forEach(b => b.classList.remove('active-tab'));
+            document.getElementById(`os-tab-${os}`).classList.add('active-tab');
+            const loc = locales[currentLang] || locales.fa;
+            const apps = appDownloadLinks[os];
+            for (let i = 1; i <= 5; i++) {
+                const app = apps['c' + i];
+                if (!app) continue;
+                document.getElementById(`title-client${i}`).innerHTML = app.name + (app.recommended ? ` <span class="recommended-badge"><i class="fa-solid fa-star"></i> ${loc.recommendedText}</span>` : '');
+                document.getElementById(`sub-client${i}`).innerText = loc.dlSubtitle;
+                const btn = document.getElementById(`btn-dl-client${i}`);
+                btn.href = app.url;
+                if (app.disabled || app.url === '#') {
+                    btn.style.pointerEvents = 'none'; btn.style.opacity = '0.5'; btn.innerText = 'N/A';
+                } else {
+                    btn.style.pointerEvents = 'auto'; btn.style.opacity = '1'; btn.innerText = loc.btnDl;
+                }
+                document.getElementById(`icon-client${i}`).className = `fa-solid ${app.icon}`;
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            const card = e.target.closest('.server-card');
+            if (card && card.dataset.link) { pingServer(card.dataset.link, card); }
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let savedPic = null; try { savedPic = localStorage.getItem('userProfilePic'); } catch(e) {}
+            if (savedPic) { document.getElementById('profile-display-img').style.backgroundImage = `url('${savedPic}')`; document.getElementById('default-avatar').style.opacity = '0'; document.getElementById('plus-icon').style.display = 'none'; }
+            selectLanguage(loadLanguage());
+            const savedTheme = loadTheme();
+            applyTheme(savedTheme);
+            fetchLiveSubscriptionData();
+            liveRefreshTimer = setInterval(fetchLiveSubscriptionData, 10000);
+            switchDownloadTab('android');
+        });
+
+        document.getElementById("lang-toggle-btn").addEventListener("click", (e) => { e.stopPropagation(); document.getElementById("lang-dropdown").classList.toggle("show"); });
+        document.addEventListener("click", () => {
+            document.getElementById("lang-dropdown").classList.remove("show");
+            closeAllDropdownsExcept(null);
+        });
+
+        document.getElementById("theme-toggle").addEventListener("click", () => {
+            const isLight = document.body.classList.contains('light-mode');
+            if (isLight) { document.body.classList.remove('light-mode'); document.getElementById('theme-icon').className = 'fa-solid fa-moon'; saveTheme(false); }
+            else { document.body.classList.add('light-mode'); document.getElementById('theme-icon').className = 'fa-solid fa-sun'; saveTheme(true); }
+        });
+    </script>
+</body>
+</html>
